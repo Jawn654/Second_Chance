@@ -227,7 +227,7 @@ class Level(State):
             speed = 1
             for i in self.bg_images:
                 self.screen.blit(i, ((x * self.bg_width) - self.player.level_scroll * speed, 0))
-                speed += 0.2
+                speed += 0.05
 
     def draw_health_bar(self):
         """Draws the player's health bar."""
