@@ -4,6 +4,7 @@ import math
 import pygame as pg
 import pygame_menu
 
+
 # Not using relative import to handle circular import issue when importing TitleScreen
 # TODO Fix this later
 import src.states.menu.title_screen as ts
