@@ -10,7 +10,7 @@ class TitleScreen(State):
     """State for the title screen."""
 
     def __init__(self):
-        super().__init__("background.png")
+        super().__init__("ForestBackground.png")
 
         self.title_logo = pg.image.load("assets/backgrounds/title_logo.png")
         self.title_logo = pg.transform.scale(self.title_logo, (450, 250))

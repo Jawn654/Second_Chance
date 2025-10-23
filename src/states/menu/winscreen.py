@@ -7,7 +7,7 @@ class WinScreen(State):
     """State for the win screen."""
 
     def __init__(self):
-        super().__init__("background.png")
+        super().__init__("YIPPEE.gif")
 
     def handle_events(self, events: list[pg.event.Event]):
         from .title_screen import TitleScreen
