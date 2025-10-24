@@ -85,6 +85,10 @@ class Enemy(pg.sprite.Sprite):
 
         # Load the sound effect
         self.hit_sound = pg.mixer.Sound(os.path.join("assets/soundeffects", f"{image}hit.mp3"))
+        # Knockback state
+        self.knockback_vx = 0
+        self.knockback_end_time = 0
+        self.knockback_duration = 0.15  # seconds
 
     def move(self):
         """Adjusts the enemy's position on the screen."""
@@ -115,8 +119,20 @@ class Enemy(pg.sprite.Sprite):
             player (pygame.sprite.Sprite): The player sprite.
         """
 
-        # Movement
-        self.move()
+        # Movement (respect knockback state)
+        if time.time() < self.knockback_end_time:
+            # During knockback, apply gravity and the knockback horizontal velocity
+            self.vertical_speed += self.gravity
+            self.rect.y += self.vertical_speed
+            self.hitbox.y += self.vertical_speed
+
+            # Apply horizontal knockback displacement
+            dx = int(self.knockback_vx)
+            self.rect.x += dx
+            self.hitbox.x += dx
+        else:
+            # Normal movement when not knocked back
+            self.move()
 
         # Update rect
         # self.rect.x += scroll  # Adjust for scrolling
@@ -175,22 +191,35 @@ class Enemy(pg.sprite.Sprite):
                     if self.rect.colliderect(tile.rect):
                         self.rect.left = tile.rect.right
 
-    def decrease_health(self, amount):
-        """Decreases the enemy's health. 
+    def decrease_health(self, amount, player=None):
+        """Decreases the enemy's health and optionally applies knockback.
 
         Args:
             amount (int): Amount to decrease health by.
+            player (pygame.sprite.Sprite, optional): The player instance that
+                caused the damage. If provided, the enemy will be knocked
+                away from the player.
         """
-        # Check if the eyeball is currently invincible
         if not self.invincible:
             self.health -= amount
             if self.health <= 0:
-                self.kill()  # Despawn the eyeball if its health reaches 0
-            # Set the eyeball to be invincible and record the time of the hit
+                self.kill()
+            # Set invincibility frames
             self.invincible = True
             self.last_hit_time = time.time()
             # Play the hit sound effect
             self.hit_sound.play()
+
+            # Apply knockback away from the player if available
+            if player is not None:
+                if self.rect.centerx >= player.rect.centerx:
+                    sign = 1
+                else:
+                    sign = -1
+                self.knockback_vx = 12 * sign
+                self.knockback_end_time = time.time() + self.knockback_duration
+                # Small upward bump
+                self.vertical_speed = -6
 
     def check_invincibility(self):
         # Check if the eyeball is currently invincible and if the invincibility duration has elapsed

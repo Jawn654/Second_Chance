@@ -69,10 +69,12 @@ class Level(State):
 
         for attack, enemies in collisions.items():
             for enemy in enemies:
-                enemy.decrease_health(attack.damage_value)
+                # Pass the player so the enemy can be knocked back away from the player
+                enemy.decrease_health(attack.damage_value, self.player)
         for attack, enemies in range_attack_collisions.items():
             for enemy in enemies:
-                enemy.decrease_health(attack.damage_value)
+                # Pass the player so the enemy can be knocked back away from the player
+                enemy.decrease_health(attack.damage_value, self.player)
 
         for portal in self.portals:
             if portal.rect.colliderect(self.player.rect):
